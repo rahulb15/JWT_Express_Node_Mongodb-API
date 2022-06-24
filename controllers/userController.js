@@ -53,7 +53,7 @@ class UserController{
                     const isMatch = await bcrypt.compare(password,user.password);
                     if((user.email === email) && isMatch){
                         //Generate JWT Tocken
-                        const token = jwt.sign({userID:user._id},process.env.JWT_SECRET_KEY,{expiresIn: "5d"});
+                        const token = jwt.sign({userID:user._id},process.env.JWT_SECRET_KEY,{expiresIn: "1m"});
                         //Status Change
                         await userModel.findByIdAndUpdate(user._id, {$set:{status: "Active"}});
                             
@@ -89,14 +89,6 @@ class UserController{
     }
 
     static loggedUser = async(req,res)=>{
-        // const user = req.user;
-        // await userModel.updateMany({}, {$set:{status: "InActive"}});
-        // if(user){
-        // await userModel.findByIdAndUpdate(req.user._id, {$set:{status: "Active"}});
-        // res.send({ "user": req.user })
-        // }else{
-        //     res.send({"status":"failed","message":"All users are Inactive and nothing change"});
-        // }
         res.send({ "user": req.user })
     }
 

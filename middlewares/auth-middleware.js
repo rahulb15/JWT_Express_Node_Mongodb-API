@@ -19,6 +19,8 @@ var checkUserAuth = async(req,res,next)=>{
         } catch (error) {
             console.log(error);
             res.status(401).send({"status": "failed", "message": "Unauthorized User"});
+            //await userModel.findByIdAndUpdate(user._id, {$set:{status: "Active"}});
+
         }
     }
     if(!token){
