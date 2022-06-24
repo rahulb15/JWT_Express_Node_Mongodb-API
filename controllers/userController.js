@@ -5,8 +5,9 @@ import transporter from '../config/emailConfig.js'
 
 
 class UserController{
+
     static userRegistration = async(req,res)=>{
-        const {name, email, password, password_confirmation, tc} = req.body;
+        const {name, email, password, password_confirmation, tc,status} = req.body;
         const user = await  userModel.findOne({email: email});
         if(user){
             res.send({"status":"failed","message":"Email already existes"});
@@ -20,7 +21,8 @@ class UserController{
                         name: name,
                         email: email,
                         password: hashPassword,
-                        tc: tc
+                        tc: tc,
+                        status: "Inactive"
                     });
                     await doc.save();
                     const saved_user = await userModel.findOne({email:email});
@@ -42,6 +44,7 @@ class UserController{
         }
     }
     static userLogin = async(req,res)=>{
+        
         try {
             const {email, password}= req.body;
             if(email && password){
@@ -51,6 +54,9 @@ class UserController{
                     if((user.email === email) && isMatch){
                         //Generate JWT Tocken
                         const token = jwt.sign({userID:user._id},process.env.JWT_SECRET_KEY,{expiresIn: "5d"});
+                        //Status Change
+                        await userModel.findByIdAndUpdate(user._id, {$set:{status: "Active"}});
+                            
                         res.send({"status":"Success","message":"Login Success","tocken": token});
                     }else{
                         res.send({"status":"failed","message":"Email and Password is not Valid"});
@@ -83,7 +89,15 @@ class UserController{
     }
 
     static loggedUser = async(req,res)=>{
-        res.send({"user":req.user})
+        // const user = req.user;
+        // await userModel.updateMany({}, {$set:{status: "InActive"}});
+        // if(user){
+        // await userModel.findByIdAndUpdate(req.user._id, {$set:{status: "Active"}});
+        // res.send({ "user": req.user })
+        // }else{
+        //     res.send({"status":"failed","message":"All users are Inactive and nothing change"});
+        // }
+        res.send({ "user": req.user })
     }
 
     static sendUserPasswordResetEmail = async(req,res)=>{
