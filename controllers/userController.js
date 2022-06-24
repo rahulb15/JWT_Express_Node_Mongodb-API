@@ -73,7 +73,8 @@ class UserController{
                 res.send({"status":"failed","message":"New Password and Confirm New Password doesn't match"});
             }else{
                 const salt = await bcrypt.genSalt(10);
-                const hashPassword = await bcrypt.hash(password,salt);
+                const newHashPassword = await bcrypt.hash(password,salt);
+                await userModel.findByIdAndUpdate(req.user._id, {$set:{password: newHashPassword}});
                 res.send({"status": "success", "messgae": "Password Changed Succesfully"});
             }
         }else{
