@@ -12,13 +12,15 @@ var checkUserAuth = async(req,res,next)=>{
             //Verify Token
             const {userID} = jwt.verify(token,process.env.JWT_SECRET_KEY);
 
-            //GET User fron Token
+            //GET User from Token
             req.user = await userModel.findById(userID).select("-password");
             next();
 
         } catch (error) {
             console.log(error);
             res.status(401).send({"status": "failed", "message": "Unauthorized User"});
+            //await userModel.findByIdAndUpdate(user._id, {$set:{status: "Active"}});
+
         }
     }
     if(!token){
