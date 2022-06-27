@@ -6,6 +6,9 @@ import transporter from '../config/emailConfig.js'
 
 class UserController{
 
+
+    ///////////////////////User Registration//////////////////////////////////////////
+
     static userRegistration = async(req,res)=>{
         const {name, email, password, password_confirmation, tc,status} = req.body;
         const user = await  userModel.findOne({email: email});
@@ -43,8 +46,11 @@ class UserController{
             }
         }
     }
-    static userLogin = async(req,res)=>{
-        
+
+
+////////////////////////////////user Login/////////////////////////////////////////////
+    
+    static userLogin = async(req,res)=>{  
         try {
             const {email, password}= req.body;
             if(email && password){
@@ -53,7 +59,7 @@ class UserController{
                     const isMatch = await bcrypt.compare(password,user.password);
                     if((user.email === email) && isMatch){
                         //Generate JWT Tocken
-                        const token = jwt.sign({userID:user._id},process.env.JWT_SECRET_KEY,{expiresIn: "1m"});
+                        const token = jwt.sign({userID:user._id},process.env.JWT_SECRET_KEY,{expiresIn: "24h"});
                         //Status Change
                         await userModel.findByIdAndUpdate(user._id, {$set:{status: "Active"}});
                             
@@ -72,6 +78,9 @@ class UserController{
         }
     }
 
+
+///////////////////////////////changeUserPassword/////////////////////////////////////////////
+
     static changeUserPassword = async(req,res)=>{
         const {password,password_confirmation}=req.body;
         if(password && password_confirmation){
@@ -88,10 +97,16 @@ class UserController{
         }
     }
 
+/////////////////////////////////////////Logged User///////////////////////////////////
+
     static loggedUser = async(req,res)=>{
         res.send({ "user": req.user })
     }
 
+
+/////////////////////////////user password and email reset///////////////////////////////////
+
+///////////for email reset
     static sendUserPasswordResetEmail = async(req,res)=>{
         const {email} = req.body
         if(email){
@@ -120,6 +135,9 @@ class UserController{
             res.send({"status":"failed","message": " Email fields are required"});
         }
     }
+
+
+///// For Password Reset
     static userPasswordReset = async(req,res)=>{
         const {password,password_confirmation} = req.body;
         const {id,token} = req.params
@@ -144,6 +162,59 @@ class UserController{
             console.log(error);
             res.send({ "status": "failed", "message": "Invalid Token" });        }
     }
+
+/////////User Delete/////////////////////////////////
+    static userDelete = async(req,res)=>{
+        
+        try {
+            console.log(req.user);
+            await userModel.findOneAndDelete({_id:req.user._id});
+            res.send({"status":"success","message":"Sucessfully Delete User"});
+        } catch (error) {
+            console.log(error);
+            res.send({ "status": "failed", "message": "Invalid" });  
+        }
+        
+    }
+
+
+
+//////////User Update////////////////////////////////
+    static userUpdate = async(req,res)=>{
+        const {email,name} = req.body;
+        try {
+            const gettingUserDetail = await userModel.findOne({_id:req.user._id});
+            console.log(gettingUserDetail._id);
+            if(gettingUserDetail){
+                if(email || name){
+                    await userModel.updateOne({_id:gettingUserDetail._id},{$set:{email:email,name:name}});
+                    res.send({"status":"success","message":"Sucessfully Update Details"});
+                }else{
+                    res.send({"status":"failed","message":"please enter any name or email"});
+                }
+            }else{
+                res.send({"status ": "failed","message":"detail not match can't be update"});
+            }
+        } catch (error) {
+            console.log(error);
+            res.send({ "status": "failed", "message": "Invalid" });  
+        }
+
+    }
+
+
+//////////User Logout///////////////////////////////
+
+
+
+
+
+
+
 }
+
+
+
+
 
 export default UserController;
