@@ -44,7 +44,7 @@ var deleteAuth = async(req,res,next)=>{
     try {
 
         //req.user = await userModel.findById(getId).select("-password");
-        req.user = await userModel.findByIdAndUpdate(getId,{$set:{token:" "}});
+        req.user = await userModel.findByIdAndUpdate(getId,{$set:{token:" ",status:"Inactive"}});
         //console(req.user);
         next();
     } catch (error) {

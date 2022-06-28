@@ -201,7 +201,7 @@ class UserController{
 
     }
 
-    //user Logout
+    /////////////////////user Logout////////////////////////////////////
 
     static userLogout = async(req,res)=>{
         //res.send({ "user": req.user });
