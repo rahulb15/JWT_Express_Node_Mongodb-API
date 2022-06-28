@@ -31,7 +31,6 @@ class UserController{
                     const saved_user = await userModel.findOne({email:email});
                     //Generate JWT Token
                     const token = jwt.sign({userID:saved_user._id},process.env.JWT_SECRET_KEY,{ expiresIn:"5d" });
-
                     //res.status(201).res.send({"status":"success","message":"Registration Success"});
                     res.send({"status":"success","message":"Registration Success","token":token});
                    } catch (error) {
@@ -61,7 +60,7 @@ class UserController{
                         //Generate JWT Tocken
                         const token = jwt.sign({userID:user._id},process.env.JWT_SECRET_KEY,{expiresIn: "24h"});
                         //Status Change
-                        await userModel.findByIdAndUpdate(user._id, {$set:{status: "Active"}});
+                        await userModel.findByIdAndUpdate(user._id, {$set:{status: "Active",token:token}});
                             
                         res.send({"status":"Success","message":"Login Success","tocken": token});
                     }else{
@@ -163,7 +162,7 @@ class UserController{
             res.send({ "status": "failed", "message": "Invalid Token" });        }
     }
 
-/////////User Delete/////////////////////////////////
+/////////User Delete////////token/////////////////////////
     static userDelete = async(req,res)=>{
         
         try {
@@ -202,19 +201,16 @@ class UserController{
 
     }
 
+    //user Logout
 
-//////////User Logout///////////////////////////////
+    static userLogout = async(req,res)=>{
+        //res.send({ "user": req.user });
+        res.send("Successfully Logout");
 
-
-
-
-
+    }
 
 
 }
-
-
-
 
 
 export default UserController;

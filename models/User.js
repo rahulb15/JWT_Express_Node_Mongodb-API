@@ -6,7 +6,8 @@ const userSchema = new mongoose.Schema({
     email: {type: String, required: true, trim: true},
     password: {type: String, required: true,trim:true},
     tc: {type: Boolean, required: true},
-    status: {type: String}
+    status: {type: String},
+    token: {type: String}
 });
 
 //Model

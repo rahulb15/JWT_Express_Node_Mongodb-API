@@ -1,20 +1,31 @@
 import jwt from "jsonwebtoken";
+//import { deleteModel } from "mongoose";
 import userModel from "../models/User.js";
+let token;
+let getId;
 
 var checkUserAuth = async(req,res,next)=>{
-    let token 
+    //let token 
     const { authorization } = req.headers
     if(authorization && authorization.startsWith('Bearer')){
         try {
             //Get Token from Header
+    
             token = authorization.split(' ')[1];
-
-            //Verify Token
+            //console.log(token);
             const {userID} = jwt.verify(token,process.env.JWT_SECRET_KEY);
+            getId = userID;
 
             //GET User from Token
+            const a = await userModel.findById(userID).select("token");
+            console.log(a.token);
+    
+            if(token === a.token){
             req.user = await userModel.findById(userID).select("-password");
             next();
+             }else{
+                res.send("You are logged out please login again");
+             }
 
         } catch (error) {
             console.log(error);
@@ -27,4 +38,20 @@ var checkUserAuth = async(req,res,next)=>{
         res.status(401).send({"status": "failed","messsage": "Unauthorized User, No Token"});
     }
 }
-export default checkUserAuth
+
+
+var deleteAuth = async(req,res,next)=>{
+    try {
+
+        //req.user = await userModel.findById(getId).select("-password");
+        req.user = await userModel.findByIdAndUpdate(getId,{$set:{token:" "}});
+        //console(req.user);
+        next();
+    } catch (error) {
+        res.status(401).send({"status": "failed","messsage": "Unauthorized User, No Token"});
+    }
+}
+
+
+
+export {checkUserAuth,deleteAuth}
