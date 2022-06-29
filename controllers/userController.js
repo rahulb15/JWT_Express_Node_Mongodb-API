@@ -259,6 +259,19 @@ class UserController {
     //res.send({ "user": req.user });
     res.send("Successfully Logout");
   };
+
+static searchUser = async(req,res)=>{
+    const { name, email, status } = req.body;
+  //const result = await userModel.find({$or: [{name:name},{email:email}]});
+  if(name || email || status){
+    const result = await userModel.find({$or: [{name:name},{email:email},{status:status}]}).select("-password -token");
+    res.send(result);
+  }else{
+    res.send({"status":"failed","message":"Not Found"});
+  }
+};
+
+
 }
 
 export default UserController;
