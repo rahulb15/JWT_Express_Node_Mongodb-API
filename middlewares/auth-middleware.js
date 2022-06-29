@@ -1,7 +1,6 @@
 import jwt from "jsonwebtoken";
 import userModel from "../models/User.js";
 
-
 let token;
 let getId;
 
@@ -42,11 +41,9 @@ var checkUserAuth = async (req, res, next) => {
 
 var deleteAuth = async (req, res, next) => {
   try {
-    //req.user = await userModel.findById(getId).select("-password");
     req.user = await userModel.findByIdAndUpdate(getId, {
       $set: { token: " ", status: "Inactive" },
     });
-    //console(req.user);
     next();
   } catch (error) {
     res
@@ -55,6 +52,4 @@ var deleteAuth = async (req, res, next) => {
   }
 };
 
-
-
-export { checkUserAuth, deleteAuth};
+export { checkUserAuth, deleteAuth };

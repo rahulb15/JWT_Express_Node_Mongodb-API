@@ -1,8 +1,12 @@
 import express from "express";
 const router = express.Router();
 import UserController from "../controllers/userController.js";
-import { checkUserAuth, deleteAuth} from "../middlewares/auth-middleware.js";
-import {check,oneOf} from "express-validator";
+import { checkUserAuth, deleteAuth } from "../middlewares/auth-middleware.js";
+import { check, oneOf } from "express-validator";
+
+
+
+
 
 //Route Level Middleware - To Protect Route
 router.use("/changepassword", checkUserAuth);
@@ -13,10 +17,23 @@ router.use("/logout", checkUserAuth, deleteAuth);
 
 
 
+
+
 //Public Routes
-router.post("/register",[check("name").notEmpty(),check("password").isLength({min: 4}).notEmpty(),check("email").isEmail()],UserController.userRegistration);
+router.post(
+  "/register",
+  [
+    check("name").notEmpty(),
+    check("password").isLength({ min: 4 }).notEmpty(),
+    check("email").isEmail(),
+  ],
+  UserController.userRegistration
+);
 router.post("/login", UserController.userLogin);
-router.post("/send-reset-password-email",UserController.sendUserPasswordResetEmail);
+router.post(
+  "/send-reset-password-email",
+  UserController.sendUserPasswordResetEmail
+);
 router.post("/reset-password/:id/:token", UserController.userPasswordReset);
 
 

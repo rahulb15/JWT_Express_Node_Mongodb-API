@@ -38,7 +38,6 @@ class UserController {
                 process.env.JWT_SECRET_KEY,
                 { expiresIn: "5d" }
               );
-              //res.status(201).res.send({"status":"success","message":"Registration Success"});
               res.send({
                 status: "success",
                 message: "Registration Success",
@@ -59,6 +58,7 @@ class UserController {
       }
     }
   };
+
   ////////////////////////////////user Login/////////////////////////////////////////////
 
   static userLogin = async (req, res) => {
