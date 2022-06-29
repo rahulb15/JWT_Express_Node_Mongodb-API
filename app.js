@@ -18,6 +18,7 @@ connectDB(DATABASE_URL);
 //JSON
 app.use(express.json());
 
+
 //Load Routes
 app.use("/api/user",router);
 

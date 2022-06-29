@@ -2,58 +2,63 @@ import userModel from "../models/User.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import transporter from "../config/emailConfig.js";
+import { validationResult } from "express-validator";
 
 class UserController {
   ///////////////////////User Registration//////////////////////////////////////////
 
   static userRegistration = async (req, res) => {
-    const { name, email, password, password_confirmation, tc, status } =
-      req.body;
-    const user = await userModel.findOne({ email: email });
-    if (user) {
-      res.send({ status: "failed", message: "Email already existes" });
+    var errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(422).jsonp(errors.array());
     } else {
-      if (name && email && password && password_confirmation && tc) {
-        if (password === password_confirmation) {
-          try {
-            const salt = await bcrypt.genSalt(10);
-            const hashPassword = await bcrypt.hash(password, salt);
-            const doc = new userModel({
-              name: name,
-              email: email,
-              password: hashPassword,
-              tc: tc,
-              status: "Inactive",
-            });
-            await doc.save();
-            const saved_user = await userModel.findOne({ email: email });
-            //Generate JWT Token
-            const token = jwt.sign(
-              { userID: saved_user._id },
-              process.env.JWT_SECRET_KEY,
-              { expiresIn: "5d" }
-            );
-            //res.status(201).res.send({"status":"success","message":"Registration Success"});
+      const { name, email, password, password_confirmation, tc, status } =
+        req.body;
+      const user = await userModel.findOne({ email: email });
+      if (user) {
+        res.send({ status: "failed", message: "Email already existes" });
+      } else {
+        if (name && email && password && password_confirmation && tc) {
+          if (password === password_confirmation) {
+            try {
+              const salt = await bcrypt.genSalt(10);
+              const hashPassword = await bcrypt.hash(password, salt);
+              const doc = new userModel({
+                name: name,
+                email: email,
+                password: hashPassword,
+                tc: tc,
+                status: "Inactive",
+              });
+              await doc.save();
+              const saved_user = await userModel.findOne({ email: email });
+              //Generate JWT Token
+              const token = jwt.sign(
+                { userID: saved_user._id },
+                process.env.JWT_SECRET_KEY,
+                { expiresIn: "5d" }
+              );
+              //res.status(201).res.send({"status":"success","message":"Registration Success"});
+              res.send({
+                status: "success",
+                message: "Registration Success",
+                token: token,
+              });
+            } catch (error) {
+              res.send({ status: "failed", message: "Unable to register" });
+            }
+          } else {
             res.send({
-              status: "success",
-              message: "Registration Success",
-              token: token,
+              status: "failed",
+              message: "Password and Confirmed password Doesn't Match",
             });
-          } catch (error) {
-            res.send({ status: "failed", message: "Unable to register" });
           }
         } else {
-          res.send({
-            status: "failed",
-            message: "Password and Confirmed password Doesn't Match",
-          });
+          res.send({ status: "failed", message: "Al fields are required" });
         }
-      } else {
-        res.send({ status: "failed", message: "Al fields are required" });
       }
     }
   };
-
   ////////////////////////////////user Login/////////////////////////////////////////////
 
   static userLogin = async (req, res) => {

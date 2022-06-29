@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
-//import { deleteModel } from "mongoose";
 import userModel from "../models/User.js";
+
+
 let token;
 let getId;
 
@@ -54,4 +55,6 @@ var deleteAuth = async (req, res, next) => {
   }
 };
 
-export { checkUserAuth, deleteAuth };
+
+
+export { checkUserAuth, deleteAuth};
