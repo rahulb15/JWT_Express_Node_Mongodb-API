@@ -3,6 +3,8 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import transporter from "../config/emailConfig.js";
 import { validationResult } from "express-validator";
+//import paginate from 'mongoose-paginate-v2';
+
 
 class UserController {
   ///////////////////////User Registration//////////////////////////////////////////
@@ -270,6 +272,29 @@ static searchUser = async(req,res)=>{
     res.send({"status":"failed","message":"Not Found"});
   }
 };
+
+//////////Getting All Users Data///////////
+static allUser = async(req,res)=>{
+  if(req.query.page && req.query.limit){
+   try {
+    console.log("hi");
+    const users = await userModel.paginate({},{page: req.query.page, limit: req.query.limit});
+    res.json(users);
+   } catch (error) {
+    console.log(error);
+    res.status(400).JWT_SECRET_KEYjson(error);
+   }
+  }else{
+    try{
+    const users = await userModel.find();
+    res.json(users);
+    }catch{
+      console.log(error);
+      res.status(400).json(error);
+    }
+    
+  }
+}
 
 
 }

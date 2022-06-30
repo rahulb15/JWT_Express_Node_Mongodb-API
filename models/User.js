@@ -1,4 +1,6 @@
 import mongoose from "mongoose";
+import mongoosePaginate from "mongoose-paginate";
+
 
 //Defining Schema
 const userSchema = new mongoose.Schema({
@@ -10,7 +12,9 @@ const userSchema = new mongoose.Schema({
   token: { type: String },
 });
 
+userSchema.plugin(mongoosePaginate);
+
+
 //Model
 const userModel = mongoose.model("user", userSchema);
-
 export default userModel;

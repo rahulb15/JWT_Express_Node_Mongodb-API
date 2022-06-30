@@ -36,6 +36,7 @@ router.post(
 );
 router.post("/reset-password/:id/:token", UserController.userPasswordReset);
 router.post("/searchuser",UserController.searchUser);
+router.get("/allUsers",UserController.allUser);
 
 
 
